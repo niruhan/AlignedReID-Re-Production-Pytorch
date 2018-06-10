@@ -45,7 +45,7 @@ class Config(object):
     parser.add_argument('-d', '--sys_device_ids', type=eval, default=(0,))
     parser.add_argument('-r', '--run', type=int, default=1)
     parser.add_argument('--set_seed', type=str2bool, default=False)
-    parser.add_argument('--dataset', type=str, default='market1501',
+    parser.add_argument('--dataset', type=str, default='custom_input',
                         choices=['market1501', 'cuhk03', 'duke', 'custom_input', 'combined'])
     parser.add_argument('--trainset_part', type=str, default='trainval',
                         choices=['trainval', 'train'])
@@ -58,7 +58,7 @@ class Config(object):
     parser.add_argument('--ims_per_id', type=int, default=4)
 
     parser.add_argument('--log_to_file', type=str2bool, default=True)
-    parser.add_argument('--normalize_feature', type=str2bool, default=True)
+    parser.add_argument('--normalize_feature', type=str2bool, default=False)
     parser.add_argument('--local_dist_own_hard_sample',
                         type=str2bool, default=False)
     parser.add_argument('-gm', '--global_margin', type=float, default=0.3)
@@ -67,10 +67,10 @@ class Config(object):
     parser.add_argument('-llw', '--l_loss_weight', type=float, default=0.)
     parser.add_argument('-idlw', '--id_loss_weight', type=float, default=0.)
 
-    parser.add_argument('--only_test', type=str2bool, default=False)
+    parser.add_argument('--only_test', type=str2bool, default=True)
     parser.add_argument('--resume', type=str2bool, default=False)
-    parser.add_argument('--exp_dir', type=str, default='')
-    parser.add_argument('--model_weight_file', type=str, default='')
+    parser.add_argument('--exp_dir', type=str, default='/home/niruhan/AlignedReID-Re-Production-Pytorch/experiment')
+    parser.add_argument('--model_weight_file', type=str, default='/home/niruhan/AlignedReID-Re-Production-Pytorch/model_weight.pth')
 
     parser.add_argument('--base_lr', type=float, default=2e-4)
     parser.add_argument('--lr_decay_type', type=str, default='exp',

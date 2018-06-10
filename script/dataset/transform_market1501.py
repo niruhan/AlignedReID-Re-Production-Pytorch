@@ -118,8 +118,7 @@ def transform(zip_file, save_dir=None):
     # the code on different machines.
     trainval_ids.sort()
     trainval_ids2labels = dict(zip(trainval_ids, range(len(trainval_ids))))
-    partitions = partition_train_val_set(
-        train_test_split['trainval_im_names'], parse_new_im_name, num_val_ids=100)
+    partitions = partition_train_val_set(train_test_split['trainval_im_names'], parse_new_im_name, num_val_ids=1)
     train_im_names = partitions['train_im_names']
     train_ids = list(set([parse_new_im_name(n, 'id')
                           for n in partitions['train_im_names']]))
@@ -163,9 +162,9 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Transform Market1501 Dataset")
     parser.add_argument('--zip_file', type=str,
-                        default='~/Dataset/market1501/Market-1501-v15.09.15.zip')
+                        default='~/Dataset/custom_input/custom_input.zip')
     parser.add_argument('--save_dir', type=str,
-                        default='~/Dataset/market1501')
+                        default='~/Dataset/custom_input')
     args = parser.parse_args()
     zip_file = osp.abspath(osp.expanduser(args.zip_file))
     save_dir = osp.abspath(osp.expanduser(args.save_dir))

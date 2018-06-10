@@ -4,7 +4,7 @@ cfg.__dict__
  'ckpt_file': 'experiment/ckpt.pth',
  'crop_prob': 0,
  'crop_ratio': 1,
- 'dataset': 'market1501',
+ 'dataset': 'custom_input',
  'exp_decay_at_epoch': 76,
  'exp_dir': 'experiment',
  'g_loss_weight': 1.0,
@@ -21,7 +21,7 @@ cfg.__dict__
  'log_steps': 10000000000.0,
  'log_to_file': True,
  'lr_decay_type': 'exp',
- 'model_weight_file': 'model_weight.pth',
+ 'model_weight_file': '/home/niruhan/AlignedReID-Re-Production-Pytorch/model_weight.pth',
  'normalize_feature': False,
  'only_test': True,
  'prefetch_threads': 2,
@@ -32,8 +32,8 @@ cfg.__dict__
  'seed': None,
  'staircase_decay_at_epochs': (101, 201),
  'staircase_decay_multiply_factor': 0.1,
- 'stderr_file': 'experiment/stderr_2018-06-09_16:38:51.txt',
- 'stdout_file': 'experiment/stdout_2018-06-09_16:38:51.txt',
+ 'stderr_file': 'experiment/stderr_2018-06-10_22:18:14.txt',
+ 'stdout_file': 'experiment/stdout_2018-06-10_22:18:14.txt',
  'sys_device_ids': (0,),
  'test_batch_size': 32,
  'test_final_batch': True,
@@ -44,7 +44,7 @@ cfg.__dict__
                      'im_mean': [0.486, 0.459, 0.408],
                      'im_std': [0.229, 0.224, 0.225],
                      'mirror_type': None,
-                     'name': 'market1501',
+                     'name': 'custom_input',
                      'num_prefetch_threads': 2,
                      'part': 'test',
                      'prng': <module 'numpy.random' from '/home/niruhan/anaconda2/envs/alignedreid/lib/python2.7/site-packages/numpy/random/__init__.pyc'>,
@@ -64,7 +64,7 @@ cfg.__dict__
                       'im_std': [0.229, 0.224, 0.225],
                       'ims_per_id': 4,
                       'mirror_type': 'random',
-                      'name': 'market1501',
+                      'name': 'custom_input',
                       'num_prefetch_threads': 2,
                       'part': 'trainval',
                       'prng': <module 'numpy.random' from '/home/niruhan/anaconda2/envs/alignedreid/lib/python2.7/site-packages/numpy/random/__init__.pyc'>,
@@ -76,24 +76,37 @@ cfg.__dict__
  'weight_decay': 0.0005}
 ------------------------------------------------------------
 ----------------------------------------
-market1501 trainval set
+custom_input trainval set
 ----------------------------------------
-NO. Images: 12936
-NO. IDs: 751
+NO. Images: 7
+NO. IDs: 3
 ----------------------------------------
 ----------------------------------------
-market1501 test set
+custom_input test set
 ----------------------------------------
-NO. Images: 31969
-NO. IDs: 751
-NO. Query Images: 3368
-NO. Gallery Images: 15913
-NO. Multi-query Images: 12688
+NO. Images: 8
+NO. IDs: 3
+NO. Query Images: 1
+NO. Gallery Images: 7
+NO. Multi-query Images: 0
 ----------------------------------------
-Loaded model weights from model_weight.pth
+Warning: Error occurs when copying 'fc.weight': The expanded size of the tensor (3) must match the existing size (751) at non-singleton dimension 0
+Warning: Error occurs when copying 'fc.bias': The expanded size of the tensor (3) must match the existing size (751) at non-singleton dimension 0
+Loaded model weights from /home/niruhan/AlignedReID-Re-Production-Pytorch/model_weight.pth
 
-=========> Test on dataset: market1501 <=========
+=========> Test on dataset: custom_input <=========
 
 Extracting feature...
-20/1000 batches done, +3.64s, total 3.64s
-[F[K40/1000 batches done, +3.15s, total 6.79s
+Done, 0.57s
+Computing global distance...
+Done, 0.02s
+Computing scores for Global Distance...
+User Warning: Version 0.18.1 is required for package scikit-learn, your current version is 0.19.1. As a result, the mAP score may not be totally correct. You can try `pip uninstall scikit-learn` and then `pip install scikit-learn==0.18.1`
+[mAP: 100.00%], [cmc1: 100.00%], [cmc5: 100.00%], [cmc10: 100.00%]
+Done, 0.01s
+Re-ranking...
+Done, 0.02s
+Computing scores for re-ranked Global Distance...
+User Warning: Version 0.18.1 is required for package scikit-learn, your current version is 0.19.1. As a result, the mAP score may not be totally correct. You can try `pip uninstall scikit-learn` and then `pip install scikit-learn==0.18.1`
+[mAP: 100.00%], [cmc1: 100.00%], [cmc5: 100.00%], [cmc10: 100.00%]
+Done, 0.00s
