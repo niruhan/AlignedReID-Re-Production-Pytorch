@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "_pydevd_bundle/pydevd_cython.pyx", line 749, in _pydevd_bundle.pydevd_cython.PyDBFrame.trace_dispatch
+    self.do_wait_suspend(thread, frame, event, arg)
+  File "_pydevd_bundle/pydevd_cython.pyx", line 254, in _pydevd_bundle.pydevd_cython.PyDBFrame.do_wait_suspend
+    self._args[0].do_wait_suspend(*args, **kwargs)
+  File "/snap/pycharm-community/64/helpers/pydev/pydevd.py", line 812, in do_wait_suspend
+    time.sleep(0.01)
+KeyboardInterrupt
+/home/niruhan/AlignedReID-Re-Production-Pytorch/aligned_reid/model/Model.py:20: UserWarning: nn.init.normal is now deprecated in favor of nn.init.normal_.
+  init.normal(self.fc.weight, std=0.001)
+/home/niruhan/AlignedReID-Re-Production-Pytorch/aligned_reid/model/Model.py:21: UserWarning: nn.init.constant is now deprecated in favor of nn.init.constant_.
+  init.constant(self.fc.bias, 0)
