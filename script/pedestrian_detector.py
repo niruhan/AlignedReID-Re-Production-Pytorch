@@ -41,7 +41,7 @@ for imagePath in paths.list_images(args["images"]):
     # draw the final bounding boxes
     for (xA, yA, xB, yB) in pick:
         #cv2.rectangle(image, (xA, yA), (xB, yB), (0, 255, 0), 2)
-        bounding_box = image[yA:yB, xA:xB]
+        bounding_box = image[yA:yB, xA+25:xB-25]
 
         cv2.imshow("bounding box", bounding_box)
         # cv2.imwrite()

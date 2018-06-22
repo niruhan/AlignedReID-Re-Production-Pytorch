@@ -3,3 +3,6 @@ exp/
 tmp/
 *.pyc
 experiment/
+script/multiple_face_tracking.py
+script/haarcascade_eye.xml
+script/haarcascade_frontalface_default.xml

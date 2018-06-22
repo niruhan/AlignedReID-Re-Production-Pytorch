@@ -114,6 +114,7 @@ def transform(zip_file, save_dir=None):
 
     trainval_ids = list(set([parse_new_im_name(n, 'id')
                              for n in train_test_split['trainval_im_names']]))
+
     # Sort ids, so that id-to-label mapping remains the same when running
     # the code on different machines.
     trainval_ids.sort()
@@ -152,6 +153,7 @@ def transform(zip_file, save_dir=None):
                   'val_marks': val_marks,
                   'test_im_names': test_im_names,
                   'test_marks': test_marks}
+
     partition_file = osp.join(save_dir, 'partitions.pkl')
     save_pickle(partitions, partition_file)
     print('Partition file saved to {}'.format(partition_file))
