@@ -293,6 +293,8 @@ class ExtractFeature(object):
 
 
 def main():
+    subprocess.check_call(
+        ['gsutil', '-m', 'cp', '-r', 'gs://dataset_alignedreid/transfered_datasets/market1501', '/tmp'])
     cfg = Config()
 
     # Redirect logs to both console and file.
@@ -318,9 +320,8 @@ def main():
     ###########
     # Dataset #
     ###########
-    subprocess.check_call(['gsutil', '-m', 'cp', '-r', 'gs://dataset_alignedreid/transfered_datasets/market1501', '/tmp'])
+
     subprocess.check_call(['gsutil', '-m', 'cp', '-r', 'gs://dataset_alignedreid/market1501/images', '/tmp/market1501'])
-    subprocess.check_call(['gsutil', '-m', 'cp', '-r', 'gs://dataset_alignedreid/market1501/partitions.pkl', '/tmp/market1501'])
     train_set = create_dataset(**cfg.train_set_kwargs)
 
     test_sets = []
