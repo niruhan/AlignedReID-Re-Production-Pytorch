@@ -21,7 +21,7 @@ for imagePath in paths.list_images(args["images"]):
     # load the image and resize it to (1) reduce detection time
     # and (2) improve detection accuracy
     image = cv2.imread(imagePath)
-    image = imutils.resize(image, width=min(400, image.shape[1]))
+    # image = imutils.resize(image, width=min(400, image.shape[1]))
     orig = image.copy()
 
     # detect people in the image
@@ -40,12 +40,12 @@ for imagePath in paths.list_images(args["images"]):
 
     # draw the final bounding boxes
     for (xA, yA, xB, yB) in pick:
-        #cv2.rectangle(image, (xA, yA), (xB, yB), (0, 255, 0), 2)
-        bounding_box = image[yA:yB, xA+25:xB-25]
-
-        cv2.imshow("bounding box", bounding_box)
-        # cv2.imwrite()
-        cv2.waitKey(0)
+        cv2.rectangle(image, (xA, yA), (xB, yB), (0, 255, 0), 2)
+        # bounding_box = image[yA:yB, xA+25:xB-25]
+        #
+        # cv2.imshow("bounding box", bounding_box)
+        # # cv2.imwrite()
+        # cv2.waitKey(0)
 
     # show some information on the number of bounding boxes
     filename = imagePath[imagePath.rfind("/") + 1:]
@@ -55,5 +55,6 @@ for imagePath in paths.list_images(args["images"]):
     # show the output images
     cv2.imshow("Before NMS", orig)
     cv2.imshow("After NMS", image)
+    cv2.imwrite("pedestrian occlusion.jpg", image)
     cv2.waitKey(0)
 

@@ -6,25 +6,28 @@ from scipy import io
 import datetime
 import time
 from contextlib import contextmanager
+from tensorflow.python.lib.io import file_io
 
 import torch
 from torch.autograd import Variable
-
 
 def time_str(fmt=None):
   if fmt is None:
     fmt = '%Y-%m-%d_%H:%M:%S'
   return datetime.datetime.today().strftime(fmt)
 
-
 def load_pickle(path):
   """Check and load pickle object.
   According to this post: https://stackoverflow.com/a/41733927, cPickle and 
   disabling garbage collector helps with loading speed."""
-  assert osp.exists(path)
-  # gc.disable()
-  with open(path, 'rb') as f:
-    ret = pickle.load(f)
+  # assert osp.exists(path)
+  # # gc.disable()
+  # gcs_file = gcs.open(path)
+  # ret = pickle.load(gcs_file)
+  # gcs_file.close()
+  # with open(path, 'rb') as f:
+  f = file_io.FileIO(path, mode='r')
+  ret = pickle.load(f)
   # gc.enable()
   return ret
 

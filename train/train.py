@@ -1,7 +1,11 @@
 """Train with optional Global Distance, Local Distance, Identification Loss."""
 from __future__ import print_function
 
+import os
+import subprocess
 import sys
+
+from tensorflow.python.lib.io import file_io
 
 sys.path.insert(0, '.')
 
@@ -46,7 +50,7 @@ class Config(object):
         parser.add_argument('-d', '--sys_device_ids', type=eval, default=(0,))
         parser.add_argument('-r', '--run', type=int, default=1)
         parser.add_argument('--set_seed', type=str2bool, default=False)
-        parser.add_argument('--dataset', type=str, default='custom_input',
+        parser.add_argument('--dataset', type=str, default='market1501',
                             choices=['market1501', 'cuhk03', 'duke', 'custom_input', 'combined'])
         parser.add_argument('--trainset_part', type=str, default='trainval',
                             choices=['trainval', 'train'])
@@ -70,9 +74,9 @@ class Config(object):
 
         parser.add_argument('--only_test', type=str2bool, default=True)
         parser.add_argument('--resume', type=str2bool, default=False)
-        parser.add_argument('--exp_dir', type=str, default='gs://dataset_alignedreid/experiment')
+        parser.add_argument('--exp_dir', type=str, default='gs://alignedreid_staging/experiment')
         parser.add_argument('--model_weight_file', type=str,
-                            default='gs://dataset_alignedreid/model_weight.pth')
+                            default='gs://alignedreid_staging/model_weight.pth')
 
         parser.add_argument('--base_lr', type=float, default=2e-4)
         parser.add_argument('--lr_decay_type', type=str, default='exp',
@@ -314,7 +318,9 @@ def main():
     ###########
     # Dataset #
     ###########
-
+    subprocess.check_call(['gsutil', '-m', 'cp', '-r', 'gs://dataset_alignedreid/transfered_datasets/market1501', '/tmp'])
+    subprocess.check_call(['gsutil', '-m', 'cp', '-r', 'gs://dataset_alignedreid/market1501/images', '/tmp/market1501'])
+    subprocess.check_call(['gsutil', '-m', 'cp', '-r', 'gs://dataset_alignedreid/market1501/partitions.pkl', '/tmp/market1501'])
     train_set = create_dataset(**cfg.train_set_kwargs)
 
     test_sets = []
@@ -371,7 +377,10 @@ def main():
         if load_model_weight:
             if cfg.model_weight_file != '':
                 map_location = (lambda storage, loc: storage)
-                sd = torch.load(cfg.model_weight_file, map_location=map_location)
+                f = file_io.FileIO(cfg.model_weight_file, mode='rb+')
+                subprocess.check_call(['gsutil', '-m', 'cp', '-r', cfg.model_weight_file, '/tmp'])
+
+                sd = torch.load('/tmp/model_weight.pth')
                 load_state_dict(model, sd)
                 print('Loaded model weights from {}'.format(cfg.model_weight_file))
             else:
@@ -383,7 +392,7 @@ def main():
         for test_set, name in zip(test_sets, test_set_names):
             test_set.set_feat_func(ExtractFeature(model_w, TVT))
             print('\n=========> Test on dataset: {} <=========\n'.format(name))
-            best_match = test_set.predict(
+            best_match = test_set.eval(
                 normalize_feat=cfg.normalize_feature,
                 use_local_distance=True)
 

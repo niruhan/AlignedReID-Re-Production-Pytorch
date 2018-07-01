@@ -221,25 +221,25 @@ class TestSet(Dataset):
             global_q_g_dist = compute_dist(
                 global_feats[q_inds], global_feats[g_inds], type='euclidean')
 
-        # with measure_time('Computing scores for Global Distance...'):
-        #   mAP, cmc_scores = compute_score(global_q_g_dist)
+        with measure_time('Computing scores for Global Distance...'):
+          mAP, cmc_scores = compute_score(global_q_g_dist)
 
-        # if to_re_rank:
-        #     with measure_time('Re-ranking...'):
-        #         # query-query distance using global distance
-        #         global_q_q_dist = compute_dist(
-        #             global_feats[q_inds], global_feats[q_inds], type='euclidean')
-        #
-        #         # gallery-gallery distance using global distance
-        #         global_g_g_dist = compute_dist(
-        #             global_feats[g_inds], global_feats[g_inds], type='euclidean')
-        #
-        #         # re-ranked global query-gallery distance
-        #         re_r_global_q_g_dist = re_ranking(
-        #             global_q_g_dist, global_q_q_dist, global_g_g_dist)
+        if to_re_rank:
+            with measure_time('Re-ranking...'):
+                # query-query distance using global distance
+                global_q_q_dist = compute_dist(
+                    global_feats[q_inds], global_feats[q_inds], type='euclidean')
 
-            # with measure_time('Computing scores for re-ranked Global Distance...'):
-            #   mAP, cmc_scores = compute_score(re_r_global_q_g_dist)
+                # gallery-gallery distance using global distance
+                global_g_g_dist = compute_dist(
+                    global_feats[g_inds], global_feats[g_inds], type='euclidean')
+
+                # re-ranked global query-gallery distance
+                re_r_global_q_g_dist = re_ranking(
+                    global_q_g_dist, global_q_q_dist, global_g_g_dist)
+
+            with measure_time('Computing scores for re-ranked Global Distance...'):
+              mAP, cmc_scores = compute_score(re_r_global_q_g_dist)
 
         if use_local_distance:
 
@@ -251,24 +251,24 @@ class TestSet(Dataset):
             local_q_g_dist = low_memory_local_dist(
                 local_feats[q_inds], local_feats[g_inds])
 
-            # with measure_time('Computing scores for Local Distance...'):
-            #   mAP, cmc_scores = compute_score(local_q_g_dist)
+            with measure_time('Computing scores for Local Distance...'):
+              mAP, cmc_scores = compute_score(local_q_g_dist)
 
-            # if to_re_rank:
-            #     with measure_time('Re-ranking...'):
-            #         # query-query distance using local distance
-            #         local_q_q_dist = low_memory_local_dist(
-            #             local_feats[q_inds], local_feats[q_inds])
-            #
-            #         # gallery-gallery distance using local distance
-            #         local_g_g_dist = low_memory_local_dist(
-            #             local_feats[g_inds], local_feats[g_inds])
-            #
-            #         re_r_local_q_g_dist = re_ranking(
-            #             local_q_g_dist, local_q_q_dist, local_g_g_dist)
+            if to_re_rank:
+                with measure_time('Re-ranking...'):
+                    # query-query distance using local distance
+                    local_q_q_dist = low_memory_local_dist(
+                        local_feats[q_inds], local_feats[q_inds])
 
-                # with measure_time('Computing scores for re-ranked Local Distance...'):
-                #   mAP, cmc_scores = compute_score(re_r_local_q_g_dist)
+                    # gallery-gallery distance using local distance
+                    local_g_g_dist = low_memory_local_dist(
+                        local_feats[g_inds], local_feats[g_inds])
+
+                    re_r_local_q_g_dist = re_ranking(
+                        local_q_g_dist, local_q_q_dist, local_g_g_dist)
+
+                with measure_time('Computing scores for re-ranked Local Distance...'):
+                  mAP, cmc_scores = compute_score(re_r_local_q_g_dist)
 
             #########################
             # Global+Local Distance #
@@ -279,17 +279,17 @@ class TestSet(Dataset):
             with measure_time('Computing scores for Global+Local Distance...'):
                 mAP, cmc_scores = compute_score(global_local_q_g_dist)
 
-            # if to_re_rank:
-            #   with measure_time('Re-ranking...'):
-            #     global_local_q_q_dist = global_q_q_dist + local_q_q_dist
-            #     global_local_g_g_dist = global_g_g_dist + local_g_g_dist
-            #
-            #     re_r_global_local_q_g_dist = re_ranking(
-            #       global_local_q_g_dist, global_local_q_q_dist, global_local_g_g_dist)
-            #
-            #   with measure_time(
-            #       'Computing scores for re-ranked Global+Local Distance...'):
-            #     mAP, cmc_scores = compute_score(re_r_global_local_q_g_dist)
+            if to_re_rank:
+              with measure_time('Re-ranking...'):
+                global_local_q_q_dist = global_q_q_dist + local_q_q_dist
+                global_local_g_g_dist = global_g_g_dist + local_g_g_dist
+
+                re_r_global_local_q_g_dist = re_ranking(
+                  global_local_q_g_dist, global_local_q_q_dist, global_local_g_g_dist)
+
+              with measure_time(
+                  'Computing scores for re-ranked Global+Local Distance...'):
+                mAP, cmc_scores = compute_score(re_r_global_local_q_g_dist)
 
         # multi-query
         # TODO: allow local distance in Multi Query
