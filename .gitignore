@@ -3,6 +3,7 @@ exp/
 tmp/
 *.pyc
 experiment/
+faster_rcnn_inception_v2_coco_2018_01_28/
 script/tracking_multiple_faces.py
 script/haarcascade_eye.xml
 script/haarcascade_frontalface_default.xml
