@@ -70,7 +70,7 @@ class Config(object):
 
         parser.add_argument('--only_test', type=str2bool, default=True)
         parser.add_argument('--resume', type=str2bool, default=False)
-        parser.add_argument('--exp_dir', type=str, default='/home/niruhan/AlignedReID-Re-Production-Pytorch/experiment')
+        parser.add_argument('--exp_dir', type=str, default='/home/niruhan/AlignedReID-Re-Production-Pytorch/my_codes')
         parser.add_argument('--model_weight_file', type=str,
                             default='/home/niruhan/AlignedReID-Re-Production-Pytorch/model_weight.pth')
 

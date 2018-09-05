@@ -352,6 +352,9 @@ class TestSet(Dataset):
         # Local Distance #
         ##################
 
+        a = local_feats[q_inds]
+        b = local_feats[g_inds]
+
         # query-gallery distance using local distance
         local_q_g_dist = low_memory_local_dist(
             local_feats[q_inds], local_feats[g_inds])
