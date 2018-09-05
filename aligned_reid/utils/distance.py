@@ -79,6 +79,9 @@ def meta_local_dist(x, y):
     dist: scalar
   """
   eu_dist = compute_dist(x, y, 'euclidean')
+  # numerator = (np.exp(eu_dist) - 1.)
+  # denominator = (np.exp(eu_dist) + 1.)
+  # dist_mat = numerator / denominator
   dist_mat = (np.exp(eu_dist) - 1.) / (np.exp(eu_dist) + 1.)
   dist = shortest_dist(dist_mat[np.newaxis])[0]
   return dist
@@ -97,7 +100,8 @@ def serial_local_dist(x, y):
   dist_mat = np.zeros([M, N])
   for i in range(M):
     for j in range(N):
-      dist_mat[i, j] = meta_local_dist(x[i], y[j])
+      a = meta_local_dist(x[i], y[j])
+      dist_mat[i, j] = a
   return dist_mat
 
 
@@ -127,7 +131,7 @@ def local_dist(x, y):
   if (x.ndim == 2) and (y.ndim == 2):
     return meta_local_dist(x, y)
   elif (x.ndim == 3) and (y.ndim == 3):
-    return parallel_local_dist(x, y)
+    return serial_local_dist(x, y)
   else:
     raise NotImplementedError('Input shape not supported.')
 

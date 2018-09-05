@@ -5,8 +5,8 @@ from torch.nn.parallel import DataParallel
 import torch.optim as optim
 import torch
 
-from aligned_reid.utils.distance import compute_dist, low_memory_matrix_op, local_dist
-from aligned_reid.utils.utils import load_state_dict
+from aligned_reid.utils.distance import compute_dist, low_memory_matrix_op, local_dist, normalize
+from aligned_reid.utils.utils import load_state_dict, measure_time
 from aligned_reid.utils.utils import set_devices
 from torch.autograd import Variable
 import numpy as np
@@ -41,7 +41,7 @@ sys_device_ids = (0,)
 
 TVT, TMO = set_devices(sys_device_ids)
 
-name_list = ['gow.jpg', 'gunes.jpg', 'niru.jpg', 'gow_query.jpg']
+name_list = ['gow.jpg', 'gunes.jpg', 'niru.jpg', 'niru.jpg']
 
 global_features_list = []
 local_features_list = []
@@ -82,7 +82,10 @@ for name in name_list:
 # Global Distance #
 ###################
 
-gallery_global_features_list = np.vstack((global_features_list[0], global_features_list[1], global_features_list[2]))
+global_features_list = np.vstack((global_features_list[0], global_features_list[1], global_features_list[2], global_features_list[3]))
+global_features_list = normalize(global_features_list, axis=1)
+
+gallery_global_features_list = global_features_list[0:3]
 query_global_features_list = np.vstack((global_features_list[3])).T
 
 # query-gallery distance using global distance
@@ -95,17 +98,26 @@ print global_q_g_dist
 # Local Distance #
 ##################
 
+local_features_list = np.vstack((local_features_list[0], local_features_list[1], local_features_list[2], local_features_list[3]))
+normalized_local_features_list = normalize(local_features_list, axis=-1)
+
+gallery_local_features_list =normalized_local_features_list[0:3]
+query_local_features_list = np.expand_dims(normalized_local_features_list[3], axis=0)
+
 # A helper function just for avoiding code duplication.
 def low_memory_local_dist(x, y):
-    x_num_splits = int(len(x) / 200) + 1
-    y_num_splits = int(len(y) / 200) + 1
-    z = low_memory_matrix_op(local_dist, x, y, 0, 0, x_num_splits, y_num_splits, verbose=True)
+    with measure_time('Computing local distance...'):
+        x_num_splits = int(len(x) / 200) + 1
+        y_num_splits = int(len(y) / 200) + 1
+        z = low_memory_matrix_op(
+            local_dist, x, y, 0, 0, x_num_splits, y_num_splits, verbose=True)
     return z
-
-gallery_local_features_list = np.vstack((local_features_list[0], local_features_list[1], local_features_list[2]))
-query_local_features_list = np.vstack(([local_features_list[3]]))
 
 # query-gallery distance using local distance
 local_q_g_dist = low_memory_local_dist(query_local_features_list, gallery_local_features_list)
 
 print local_q_g_dist
+
+global_local_distance = global_q_g_dist + local_q_g_dist
+
+print global_local_distance
