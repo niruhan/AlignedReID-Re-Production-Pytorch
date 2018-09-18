@@ -35,16 +35,6 @@ def alignment(src_img,src_pts):
     face_img = cv2.warpAffine(src_img, tfm, crop_size)
     return face_img
 
-#load sphereface model-----------------------------------------------------------=
-
-model='model/sphere20a_20171020.pth'
-net='sphere20a'
-net = getattr(net_sphere,net)()
-net.load_state_dict(torch.load(model))
-net.cuda()
-net.eval()
-net.feature = True
-
 #fn for loading Database-----------------------------------------------------------
 
 def LoadDatabase(path ='./img_db'):
@@ -90,7 +80,7 @@ def DetectLandmarks(pilImg):
     testLandmarkList = {}
     boundingBoxesList = []
 
-    bounding_boxes, testLandmarks = detect_faces(pilImg,min_face_size=100.0)
+    bounding_boxes, testLandmarks = detect_faces(pilImg,min_face_size=10.0)
     for face in range(len(testLandmarks)):
         i = testLandmarks[face]
         landmarkReshaped = [i[0],i[5],i[1],i[6],i[2],i[7],i[3],i[8],i[4],i[9]]
@@ -111,7 +101,7 @@ def AlignTestFaces(cv2img, testLandmarkList):
 
 #recognize face---------------------------------------------------------------------
 
-def RecognizeFace(testAlignedFacesList, dbAlignedFacesList):
+def RecognizeFace(testAlignedFacesList, dbAlignedFacesList, net):
     nameList={}
     for key1 in testAlignedFacesList:
         testFace = testAlignedFacesList[key1]
@@ -149,17 +139,35 @@ def RecognizeFace(testAlignedFacesList, dbAlignedFacesList):
 
 #main-----------------------------------------------------------------------------
 
-Database = LoadDatabase()
-DBLandmarks = LoadDbLandmarks()
-AlignedDB = AlignDbImages(Database, DBLandmarks)
+def load_system(model_path, database_path, landmarkTextFile):
+    model = model_path # 'model/sphere20a_20171020.pth'
+    net = 'sphere20a'
+    net = getattr(net_sphere, net)()
+    net.load_state_dict(torch.load(model))
+    net.cuda()
+    net.eval()
+    net.feature = True
 
-pilImage, cv2Image = LoadTestImage('./test_photos/7.jpg')
-testLandMarkList, testBBList = DetectLandmarks(pilImage)
-AlignedTestFaces = AlignTestFaces(cv2Image,testLandMarkList)
+    Database = LoadDatabase(database_path)
+    DBLandmarks = LoadDbLandmarks(landmarkTextFile)
+    AlignedDB = AlignDbImages(Database, DBLandmarks)
+    return net, AlignedDB
 
-nameList = RecognizeFace(AlignedTestFaces, AlignedDB)
+def run_test(testImageCV2, net, AlignedDB):
+    # load sphereface model-----------------------------------------------------------=
 
-print(nameList);
 
-show_bboxes(bounding_boxes=testBBList,img=pilImage,names=nameList.values())
+
+    # pilImage, cv2Image = LoadTestImage(testImagePath) #'./test_photos/7.jpg'
+    pilImage = Image.fromarray(testImageCV2)
+    testLandMarkList, testBBList = DetectLandmarks(pilImage)
+    AlignedTestFaces = AlignTestFaces(testImageCV2,testLandMarkList)
+
+    nameList = RecognizeFace(AlignedTestFaces, AlignedDB, net)
+
+    # show_bboxes(bounding_boxes=testBBList,img=pilImage,names=nameList.values())
+
+    return nameList
+
+
 
