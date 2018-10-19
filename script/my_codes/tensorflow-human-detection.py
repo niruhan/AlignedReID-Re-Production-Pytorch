@@ -7,6 +7,8 @@ import tensorflow as tf
 import cv2
 import time
 
+from script.my_codes.nonmax_suppression import nms
+
 
 class DetectorAPI:
     def __init__(self, path_to_ckpt):
@@ -65,11 +67,22 @@ if __name__ == "__main__":
     threshold = 0.7
     # cap = cv2.VideoCapture('/path/to/input/video')
 
-    img = cv2.imread('my_images/pedestrians.jpg')
+    img = cv2.imread('my_images/sutha.jpg')
 
     # img = cv2.resize(cap, (1280, 720))
 
     boxes, scores, classes, num = odapi.processFrame(img)
+
+    nms_input = np.empty((len(boxes),5))
+
+    # nms_input[:, :-1] = boxes
+    # nms_input[:, :0] = boxes[1]
+    # nms_input[:, :1] = boxes[0]
+    # nms_input[:, :2] = boxes[3]
+    # nms_input[:, :3] = boxes[2]
+    # nms_input[:, 4] = scores
+
+    picks_from_nms = nms(nms_input)
 
     # Visualization of the results of a detection.
 
@@ -77,7 +90,9 @@ if __name__ == "__main__":
         # Class 1 represents human
         if classes[i] == 1 and scores[i] > threshold:
             box = boxes[i]
-            cv2.rectangle(img, (box[1], box[0]), (box[3], box[2]), (255, 0, 0), 2)
+            cv2.circle(img, (box[1], box[0]), 5, (0, 255, 0), -1)
+            cv2.circle(img, (box[3], box[2]), 5, (255, 0, 0), -1)
+            # cv2.rectangle(img, (box[1], box[0]), (box[3], box[2]), (255, 0, 0), 2)
 
     cv2.imshow("preview", img)
     key = cv2.waitKey(0)

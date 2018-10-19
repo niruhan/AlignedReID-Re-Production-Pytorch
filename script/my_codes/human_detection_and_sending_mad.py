@@ -10,7 +10,6 @@ import socket
 import struct
 import pickle
 
-from script.my_codes.centroidtracker import CentroidTracker
 from script.my_codes.nonmax_suppression import nms
 
 
@@ -69,7 +68,6 @@ if __name__ == "__main__":
     model_path = '../../faster_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb'
     odapi = DetectorAPI(path_to_ckpt=model_path)
     threshold = 0.7
-    cap = cv2.VideoCapture('/home/niruhan/Dataset/custom_video/vedha.mov')
     encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 
     # connect to socket
@@ -77,71 +75,67 @@ if __name__ == "__main__":
     client_socket.connect(('192.168.8.100', 8485))
     connection = client_socket.makefile('wb')
 
-    # initialize our centroid tracker and frame dimensions
-    ct = CentroidTracker()
+    # cap = cv2.VideoCapture('/path/to/input/video')
 
-    # img = cv2.imread('my_images/pedestrians.jpg')
+    img = cv2.imread('my_images/car.jpg')
 
     # img = cv2.resize(cap, (1280, 720))
 
-    # boxes, scores, classes, num = odapi.processFrame(img)
+    boxes, scores, classes, num = odapi.processFrame(img)
+
+    nms_input = np.empty((len(boxes),5))
+
+    nms_input[:, 0] = [row[1] for row in boxes]
+    nms_input[:, 1] = [row[0] for row in boxes]
+    nms_input[:, 2] = [row[3] for row in boxes]
+    nms_input[:, 3] = [row[2] for row in boxes]
+    nms_input[:, 4] = scores
+
+    picks_from_nms = nms(nms_input)
 
     # Visualization of the results of a detection.
 
     # for i in range(len(boxes)):
-    #     # Class 1 represents human
-    #     if classes[i] == 1 and scores[i] > threshold:
-    #         box = boxes[i]
-    #         cv2.rectangle(img, (box[1], box[0]), (box[3], box[2]), (255, 0, 0), 2)
+    for i in picks_from_nms:
+        # Class 1 represents human
+        if classes[i] == 1 and scores[i] > threshold:
+            box = boxes[i]
+            # cv2.circle(img, (box[1], box[0]), 5, (0, 255, 0), -1)
+            # cv2.circle(img, (box[3], box[2]), 5, (255, 0, 0), -1)
+            cv2.rectangle(img, (box[1], box[0]), (box[3], box[2]), (255, 0, 0), 2)
+
+            person_bounding_box = img[box[0]:box[2], box[1]:box[3]]
+            # cv2.imshow("preview", person_bounding_box)
+            # key = cv2.waitKey(0)
+            # raw_input("Press Enter to continue...")
+            #
+            result, frame = cv2.imencode('.jpg', person_bounding_box, encode_param)
+            data = pickle.dumps(frame, 0)
+            size = len(data)
+
+            print("{}".format(size))
+            client_socket.sendall(struct.pack(">L", size) + data)
+            print "finished sending"
+
+    cv2.imshow("preview", img)
+    key = cv2.waitKey(0)
+
+    # while True:
+    #     r, img = cap.read()
+    #     img = cv2.resize(img, (1280, 720))
     #
-    # cv2.imshow("preview", img)
-    # key = cv2.waitKey(0)
-
-    while True:
-        r, img = cap.read()
-        img = cv2.resize(img, (1280, 720))
-        # cv2.imwrite("comparison", img)
-
-        boxes, scores, classes, num = odapi.processFrame(img)
-
-        nms_input = np.empty((len(boxes), 5))
-
-        # print boxes[:, 1]
-
-        # nms_input[:, :-1] = boxes
-        nms_input[:, 0] = [row[1] for row in boxes]
-        nms_input[:, 1] = [row[0] for row in boxes]
-        nms_input[:, 2] = [row[3] for row in boxes]
-        nms_input[:, 3] = [row[2] for row in boxes]
-        nms_input[:, 4] = scores
-
-        picks_from_nms = nms(nms_input)
-
-        # tracker_input_rects = []
-        # for i in picks_from_nms:
-        #     tracker_input_rects.append()
-
-        # Visualization of the results of a detection.
-
-        for i in picks_from_nms:
-            # Class 1 represents human
-            if classes[i] == 1 and scores[i] > threshold:
-                box = boxes[i]
-                cv2.rectangle(img,(box[1],box[0]),(box[3],box[2]), (255,0,0),2)
-
-                person_bounding_box = img[box[0]:box[2], box[1]:box[3]]
-
-                result, frame = cv2.imencode('.jpg', person_bounding_box, encode_param)
-                data = pickle.dumps(frame, 0)
-                size = len(data)
-
-                print("{}".format(size))
-                client_socket.sendall(struct.pack(">L", size) + data)
-                print "finished sending"
-
-        cv2.imshow("preview", img)
-        key = cv2.waitKey(1)
-        # raw_input("Press Enter to continue...")
-        # if key & 0xFF == ord('q'):
-        #     break
+    #     boxes, scores, classes, num = odapi.processFrame(img)
+    #
+    #     # Visualization of the results of a detection.
+    #
+    #     for i in range(len(boxes)):
+    #         # Class 1 represents human
+    #         if classes[i] == 1 and scores[i] > threshold:
+    #             box = boxes[i]
+    #             cv2.rectangle(img,(box[1],box[0]),(box[3],box[2]),(255,0,0),2)
+    #
+    #     cv2.imshow("preview", img)
+    #     key = cv2.waitKey(1)
+    #     if key & 0xFF == ord('q'):
+    #         break
 
